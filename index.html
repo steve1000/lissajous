@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lissajous</title>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #canvas,
+        #canvas2,
+        #canvas3 {
+            width: 800px;
+            height: 800px;
+            background: black;
+        }
+
+        #canvas2,
+        #canvas3 {
+            background: transparent;
+        }
+
+        canvas {
+            position: absolute
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <canvas id="canvas2"></canvas>
+    <canvas id="canvas3"></canvas>
+    <script>
+        var baseCanvas
+        var baseContext
+        var canvas
+        var canvas2
+        var ctx
+        var ctx2
+
+        var radius = 50
+        var circles = [
+            { colour: 'red', speed: 2, r: 255, g: 0, b: 0 },
+            { colour: 'pink', speed: 1.2, r: 255, g: 200, b: 200 },
+            { colour: 'blue', speed: 1.6, r: 0, g: 0, b: 255 },
+            { colour: 'green', speed: 1.3, r: 0, g: 255, b: 0 },
+            { colour: 'yellow', speed: 1, r: 255, g: 255, b: 0 }
+        ]
+
+        function drawCircleTracer() {
+            ctx.clearRect(0, 0, 800, 800)
+            ctx.fillStyle = 'white'
+
+            circles.forEach((item, i) => {
+                ctx.beginPath()
+                ctx.arc(item.topX, item.topY, 4, 0, Math.PI * 2, false)
+                ctx.fill()
+                ctx.closePath()
+
+                ctx.beginPath()
+                ctx.arc(item.leftX, item.leftY, 4, 0, Math.PI * 2, false)
+                ctx.fill()
+                ctx.closePath()
+
+                ctx.strokeStyle = 'rgba(255,255,255,1)'
+                ctx.beginPath()
+                ctx.setLineDash([5, 5])
+                ctx.moveTo(item.leftX, item.leftY)
+                ctx.lineTo(circles[0].topX, item.leftY)
+                ctx.stroke()
+
+                ctx.beginPath()
+                ctx.setLineDash([5, 5])
+                ctx.moveTo(item.topX, item.topY)
+                ctx.lineTo(item.topX, circles[0].leftY)
+                ctx.stroke()
+
+                item.angle += 0.01
+
+                item.topX = item.offset + (radius * Math.sin(item.angle * item.speed))
+                item.topY = item.offset2 + (radius * Math.cos(item.angle * item.speed))
+
+                item.leftX = item.offset2 + (radius * Math.sin(item.angle * item.speed))
+                item.leftY = item.offset + (radius * Math.cos(item.angle * item.speed))
+
+                // intersections
+                circles.forEach((circle, j) => {
+                    ctx2.fillStyle = 'rgb(' + circle.r + ',' + circle.g + ',' + circle.b +')'
+                    if(j !== i) {
+                        const r = (circle.r + circles[i].r) / 2
+                        const g = (circle.g + circles[i].g) / 2
+                        const b = (circle.b + circles[i].b) / 2
+                        ctx2.fillStyle = 'rgb(' + r + ',' + g + ',' + b +')'
+                    }
+                    ctx2.beginPath()
+                    ctx2.arc(circle.topX, item.leftY, 1, 0, Math.PI * 2, false)
+                    ctx2.fill()
+                    ctx2.closePath()
+
+                })
+
+            })
+        }
+
+        function init() {
+            baseCanvas = document.getElementById('canvas')
+            canvas = document.getElementById('canvas2')
+            canvas2 = document.getElementById('canvas3')
+
+            baseContext = baseCanvas.getContext('2d')
+            ctx = canvas.getContext('2d')
+            ctx2 = canvas2.getContext('2d')
+
+            baseCanvas.width = 800
+            baseCanvas.height = 800
+            canvas.width = 800
+            canvas.height = 800
+            canvas2.width = 800
+            canvas2.height = 800
+
+            circles = circles.map((item, i) => {
+                const o1 = 800 - ((i * radius) + (80 * i) + 70)
+                const o2 = 70
+                return {
+                    colour: item.colour,
+                    r: item.r,
+                    g: item.g,
+                    b: item.b,
+                    speed: item.speed,
+                    offset: o1,
+                    offset2: o2,
+                    topX: o1 + radius - 1,
+                    topY: o2,
+                    leftX: o2 + radius - 1,
+                    leftY: o1,
+                    angle: 0
+                }
+            })
+            // set up the drawing for the colours
+            circles.forEach((item, i) => {
+                // across the top
+                baseContext.beginPath()
+                baseContext.strokeStyle = item.colour
+                baseContext.arc(item.offset, item.offset2, radius, 0, Math.PI * 2, false)
+                baseContext.stroke()
+                baseContext.closePath()
+                // down the side
+                baseContext.beginPath()
+                baseContext.arc(item.offset2, item.offset, radius, 0, Math.PI * 2, false)
+                baseContext.stroke()
+                baseContext.closePath()
+            })
+
+            setInterval(drawCircleTracer, 10)
+
+        }
+
+        window.onload = init
+    </script>
+</body>
+
+</html>
