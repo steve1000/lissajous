@@ -43,11 +43,11 @@
 
         var radius = 50
         var circles = [
-            { colour: 'red', speed: 2, r: 255, g: 0, b: 0 },
-            { colour: 'pink', speed: 1.2, r: 255, g: 200, b: 200 },
-            { colour: 'blue', speed: 1.6, r: 0, g: 0, b: 255 },
-            { colour: 'green', speed: 1.3, r: 0, g: 255, b: 0 },
-            { colour: 'yellow', speed: 1, r: 255, g: 255, b: 0 }
+            { speed: 2, r: 255, g: 0, b: 0 },
+            { speed: 1.2, r: 255, g: 200, b: 200 },
+            { speed: 1.6, r: 0, g: 0, b: 255 },
+            { speed: 1.3, r: 0, g: 255, b: 0 },
+            { speed: 1, r: 255, g: 255, b: 0 }
         ]
 
         function drawCircleTracer() {
@@ -125,7 +125,6 @@
                 const o1 = 800 - ((i * radius) + (80 * i) + 70)
                 const o2 = 70
                 return {
-                    colour: item.colour,
                     r: item.r,
                     g: item.g,
                     b: item.b,
@@ -143,7 +142,7 @@
             circles.forEach((item, i) => {
                 // across the top
                 baseContext.beginPath()
-                baseContext.strokeStyle = item.colour
+                baseContext.strokeStyle = 'rgb(' + item.r + ',' + item.g + ',' + item.b +')'
                 baseContext.arc(item.offset, item.offset2, radius, 0, Math.PI * 2, false)
                 baseContext.stroke()
                 baseContext.closePath()
